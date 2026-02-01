@@ -1,6 +1,6 @@
 # E-Commerce App - Authentication System
 
-A production-ready **Sign In / Sign Up authentication system** for a mobile e-commerce app with modern Uber-like UX.
+A production-ready **Sign In / Sign Up authentication system** for a mobile e-commerce app.
 
 ## 🎯 Features
 
@@ -8,7 +8,6 @@ A production-ready **Sign In / Sign Up authentication system** for a mobile e-co
 - ✅ User Login with secure password verification
 - ✅ Session management using SharedPreferences
 - ✅ Auto-redirect for logged-in users
-- ✅ Modern Uber-style UI design
 - ✅ Form validation with error handling
 - ✅ Secure password hashing (bcrypt)
 - ✅ RESTful API architecture

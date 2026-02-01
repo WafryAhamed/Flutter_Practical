@@ -1,22 +1,32 @@
+// ============================================================
+// FILE: custom_button.dart
+// PURPOSE: Reusable button widget used throughout the app
+// Supports loading state, outlined style, and icons
+// ============================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/constants.dart';
 
-/// Custom Button Widget
-/// Uber-style modern button with loading state support
-
+// CustomButton is a reusable button widget
+// It shows a loading spinner when isLoading is true
 class CustomButton extends StatelessWidget {
-  final String text;
-  final VoidCallback? onPressed;
-  final bool isLoading;
-  final bool isOutlined;
+  // ----------------------------------------------------------
+  // PROPERTIES
+  // ----------------------------------------------------------
+
+  final String text; // Button label
+  final VoidCallback? onPressed; // Function called on tap
+  final bool isLoading; // Show spinner instead of text
+  final bool isOutlined; // Border-only style
   final Color? backgroundColor;
   final Color? textColor;
   final double? width;
   final double height;
-  final IconData? icon;
+  final IconData? icon; // Optional icon before text
   final double borderRadius;
 
+  // Constructor with default values
   const CustomButton({
     super.key,
     required this.text,
@@ -33,18 +43,21 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Determine colors based on button style
     final bgColor =
         backgroundColor ??
         (isOutlined ? Colors.transparent : AppTheme.primaryColor);
     final fgColor =
         textColor ?? (isOutlined ? AppTheme.primaryColor : Colors.white);
 
+    // SizedBox controls button dimensions
     return SizedBox(
-      width: width ?? double.infinity,
+      width: width ?? double.infinity, // Full width by default
       height: height,
       child: isOutlined
+          // Outlined button has border, transparent background
           ? OutlinedButton(
-              onPressed: isLoading ? null : onPressed,
+              onPressed: isLoading ? null : onPressed, // Disable when loading
               style: OutlinedButton.styleFrom(
                 foregroundColor: fgColor,
                 side: BorderSide(
@@ -57,14 +70,15 @@ class CustomButton extends StatelessWidget {
               ),
               child: _buildButtonContent(fgColor),
             )
+          // Filled button has solid background
           : ElevatedButton(
-              onPressed: isLoading ? null : onPressed,
+              onPressed: isLoading ? null : onPressed, // Disable when loading
               style: ElevatedButton.styleFrom(
                 backgroundColor: bgColor,
                 foregroundColor: fgColor,
                 disabledBackgroundColor: AppTheme.textHint,
                 disabledForegroundColor: Colors.white70,
-                elevation: 0,
+                elevation: 0, // Flat design, no shadow
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(borderRadius),
                 ),

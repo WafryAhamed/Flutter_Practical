@@ -1,28 +1,37 @@
+// ============================================================
+// FILE: custom_textfield.dart
+// PURPOSE: Reusable text input widgets for forms
+// Includes base CustomTextField, EmailTextField, PasswordTextField
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../core/theme.dart';
 
-/// Custom TextField Widget
-/// Modern Uber-style input field with validation support
-
+// CustomTextField is a reusable input field widget
+// It handles validation, focus states, and password visibility
 class CustomTextField extends StatefulWidget {
-  final String label;
-  final String? hint;
-  final TextEditingController controller;
-  final String? Function(String?)? validator;
-  final TextInputType keyboardType;
-  final TextInputAction textInputAction;
-  final bool obscureText;
-  final bool enabled;
-  final int maxLines;
-  final int? maxLength;
-  final IconData? prefixIcon;
-  final Widget? suffix;
-  final List<TextInputFormatter>? inputFormatters;
-  final void Function(String)? onChanged;
-  final void Function(String)? onSubmitted;
-  final FocusNode? focusNode;
-  final bool autofocus;
+  // ----------------------------------------------------------
+  // PROPERTIES
+  // ----------------------------------------------------------
+
+  final String label; // Label above the field
+  final String? hint; // Placeholder text inside field
+  final TextEditingController controller; // Stores input value
+  final String? Function(String?)? validator; // Validation function
+  final TextInputType keyboardType; // Number, email, text, etc.
+  final TextInputAction textInputAction; // Next, done, etc.
+  final bool obscureText; // Hide text (for passwords)
+  final bool enabled; // Can user interact?
+  final int maxLines; // Multi-line input
+  final int? maxLength; // Character limit
+  final IconData? prefixIcon; // Icon on left side
+  final Widget? suffix; // Widget on right side
+  final List<TextInputFormatter>? inputFormatters; // Input filters
+  final void Function(String)? onChanged; // Called on each keystroke
+  final void Function(String)? onSubmitted; // Called on Enter/Done
+  final FocusNode? focusNode; // Manage focus programmatically
+  final bool autofocus; // Focus on screen load
 
   const CustomTextField({
     super.key,

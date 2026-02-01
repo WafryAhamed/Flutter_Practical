@@ -1,3 +1,10 @@
+// ============================================================
+// FILE: signup_screen.dart
+// PURPOSE: User registration screen
+// New users create an account with name, email, password
+// On success, user is logged in and goes to Dashboard
+// ============================================================
+
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
 import '../../core/constants.dart';
@@ -8,10 +15,7 @@ import '../../widgets/custom_textfield.dart';
 import '../../utils/validators.dart';
 import '../dashboard/dashboard_screen.dart';
 
-/// Sign Up Screen
-/// Handles new user registration
-/// Modern Uber-style UI with form validation
-
+// SignupScreen is a StatefulWidget because it manages form state
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -20,29 +24,45 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  // Form key for validation
+  // ----------------------------------------------------------
+  // FORM AND CONTROLLERS
+  // ----------------------------------------------------------
+
+  // Form key validates all fields together
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
+  // Controllers store text input values
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // Focus nodes
+  // Focus nodes manage keyboard focus between fields
   final _nameFocusNode = FocusNode();
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
   final _confirmPasswordFocusNode = FocusNode();
 
-  // State
+  // ----------------------------------------------------------
+  // STATE VARIABLES
+  // ----------------------------------------------------------
+
+  // Shows loading spinner when true
   bool _isLoading = false;
+  // User must accept terms before signing up
   bool _acceptedTerms = false;
 
-  // Services - use mock or real based on config
+  // ----------------------------------------------------------
+  // SERVICES
+  // ----------------------------------------------------------
+
+  // Real service calls PHP backend API
   final _authService = AuthService();
+  // Mock service for testing without backend
   final _mockAuthService = MockAuthService();
 
+  // Clean up controllers when screen is closed
+  // Prevents memory leaks
   @override
   void dispose() {
     _nameController.dispose();
@@ -56,14 +76,17 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  /// Handle signup submission
+  // ----------------------------------------------------------
+  // SIGNUP HANDLER
+  // ----------------------------------------------------------
+  // Called when user taps "Create Account" button
   Future<void> _handleSignup() async {
-    // Validate form
+    // Step 1: Validate all form fields
     if (!_formKey.currentState!.validate()) {
-      return;
+      return; // Stop if any field is invalid
     }
 
-    // Check terms acceptance
+    // Step 2: Check if terms are accepted
     if (!_acceptedTerms) {
       _showSnackBar(
         'Please accept the Terms of Service to continue',
@@ -72,10 +95,12 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
 
+    // Step 3: Show loading spinner
     setState(() => _isLoading = true);
 
     try {
-      // Attempt registration (uses mock service if enabled)
+      // Step 4: Call signup API
+      // Uses mock or real based on AppConstants.useMockData
       final user = AppConstants.useMockData
           ? await _mockAuthService.signUp(
               name: _nameController.text,
@@ -88,36 +113,39 @@ class _SignupScreenState extends State<SignupScreen> {
               password: _passwordController.text,
             );
 
+      // Step 5: Success - navigate to dashboard
       if (mounted) {
-        // Show success message
         _showSnackBar(
           'Welcome, ${user.name}! Account created successfully.',
           isError: false,
         );
 
-        // Navigate to dashboard
+        // pushAndRemoveUntil clears the navigation stack
+        // User can't press back to return to signup
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const DashboardScreen()),
           (route) => false,
         );
       }
     } catch (e) {
+      // Step 6: Error - show error message
       if (mounted) {
         _showSnackBar(e.toString(), isError: true);
       }
     } finally {
+      // Step 7: Hide loading spinner
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
   }
 
-  /// Navigate back to login
+  // Go back to login screen
   void _navigateToLogin() {
     Navigator.of(context).pop();
   }
 
-  /// Show snackbar message
+  // Show popup message at bottom of screen
   void _showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

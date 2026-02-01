@@ -1,3 +1,9 @@
+// ============================================================
+// FILE: dashboard_screen.dart
+// PURPOSE: Main screen after user logs in
+// Shows user info, stats, and logout option
+// ============================================================
+
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
 import '../../core/constants.dart';
@@ -5,10 +11,7 @@ import '../../services/auth_service.dart';
 import '../../widgets/custom_button.dart';
 import '../auth/login_screen.dart';
 
-/// Dashboard Screen
-/// Main screen after successful authentication
-/// Displays user info and provides logout functionality
-
+// DashboardScreen displays after successful login
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -17,20 +20,34 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  // ----------------------------------------------------------
+  // SERVICES AND STATE
+  // ----------------------------------------------------------
+
+  // Auth service to get user data and handle logout
   final AuthService _authService = AuthService();
+
+  // User info displayed on screen
   String _userName = '';
   String _userEmail = '';
-  bool _isLoading = true;
-  bool _isLoggingOut = false;
+
+  // Loading states
+  bool _isLoading = true; // Initial data loading
+  bool _isLoggingOut = false; // Logout in progress
+
+  // ----------------------------------------------------------
+  // INITIALIZATION
+  // ----------------------------------------------------------
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+    _loadUserData(); // Load user data when screen opens
   }
 
-  /// Load user data from session
+  // Load saved user data from SharedPreferences
   Future<void> _loadUserData() async {
+    // Try to load full user object first
     final user = await _authService.loadUserFromSession();
     if (user != null && mounted) {
       setState(() {
@@ -39,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _isLoading = false;
       });
     } else {
-      // Fallback to individual getters
+      // Fallback: load name and email separately
       final name = await _authService.getUserName();
       final email = await _authService.getUserEmail();
       if (mounted) {
@@ -52,9 +69,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  /// Handle logout
+  // ----------------------------------------------------------
+  // LOGOUT HANDLER
+  // ----------------------------------------------------------
+
+  // Shows confirmation dialog, then logs out user
   Future<void> _handleLogout() async {
-    // Show confirmation dialog
+    // Step 1: Show confirmation dialog
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -75,21 +96,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
 
+    // User cancelled
     if (shouldLogout != true) return;
 
+    // Step 2: Show loading state
     setState(() => _isLoggingOut = true);
 
     try {
+      // Step 3: Clear session data
       await _authService.logout();
 
       if (mounted) {
-        // Navigate to login and clear stack
+        // Step 4: Go to login screen and clear navigation stack
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
           (route) => false,
         );
       }
     } catch (e) {
+      // Step 5: Handle error
       if (mounted) {
         setState(() => _isLoggingOut = false);
         ScaffoldMessenger.of(context).showSnackBar(

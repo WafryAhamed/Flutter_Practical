@@ -1,19 +1,29 @@
+// ============================================================
+// FILE: validators.dart
+// PURPOSE: Form validation functions
+// Each function returns null if valid, or error message if invalid
+// Used by TextFormField widgets to validate user input
+// ============================================================
+
 import '../core/constants.dart';
 
-/// Input Validators
-/// Provides validation functions for form fields
-/// Returns error message string if invalid, null if valid
-
+// Validators class contains static validation methods
+// Static means you call them directly: Validators.email(value)
 class Validators {
-  /// Validate email format
+  // ----------------------------------------------------------
+  // EMAIL VALIDATOR
+  // ----------------------------------------------------------
+  // Checks if email is empty and if it matches email format
   static String? email(String? value) {
+    // Check if empty
     if (value == null || value.trim().isEmpty) {
       return 'Email is required';
     }
 
     final trimmedValue = value.trim();
 
-    // Email regex pattern
+    // Regex pattern for email validation
+    // Matches: user@domain.com, user.name@domain.co.lk, etc.
     final emailRegex = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
     );
@@ -22,41 +32,51 @@ class Validators {
       return 'Please enter a valid email address';
     }
 
-    return null;
+    return null; // null means valid
   }
 
-  /// Validate password
-  /// Requirements: minimum 6 characters
+  // ----------------------------------------------------------
+  // PASSWORD VALIDATOR
+  // ----------------------------------------------------------
+  // Checks password length (min 6, max 128 characters)
   static String? password(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
 
+    // Check minimum length
     if (value.length < AppConstants.minPasswordLength) {
       return 'Password must be at least ${AppConstants.minPasswordLength} characters';
     }
 
+    // Check maximum length
     if (value.length > AppConstants.maxPasswordLength) {
       return 'Password must be less than ${AppConstants.maxPasswordLength} characters';
     }
 
-    return null;
+    return null; // null means valid
   }
 
-  /// Validate password with strength requirements
-  /// Requirements: uppercase, lowercase, number
+  // ----------------------------------------------------------
+  // STRONG PASSWORD VALIDATOR
+  // ----------------------------------------------------------
+  // Requires uppercase, lowercase, and number
   static String? strongPassword(String? value) {
+    // First do basic validation
     final basicValidation = password(value);
     if (basicValidation != null) return basicValidation;
 
+    // Check for uppercase letter
     if (!RegExp(r'[A-Z]').hasMatch(value!)) {
       return 'Password must contain at least one uppercase letter';
     }
 
+    // Check for lowercase letter
     if (!RegExp(r'[a-z]').hasMatch(value)) {
       return 'Password must contain at least one lowercase letter';
     }
 
+    // Check for number
     if (!RegExp(r'[0-9]').hasMatch(value)) {
       return 'Password must contain at least one number';
     }
@@ -64,7 +84,11 @@ class Validators {
     return null;
   }
 
-  /// Validate confirm password matches original
+  // ----------------------------------------------------------
+  // CONFIRM PASSWORD VALIDATOR
+  // ----------------------------------------------------------
+  // Returns a function that checks if passwords match
+  // This is a "factory" pattern - creates a validator with the original password
   static String? Function(String?) confirmPassword(String originalPassword) {
     return (String? value) {
       if (value == null || value.isEmpty) {
@@ -79,7 +103,10 @@ class Validators {
     };
   }
 
-  /// Validate name field
+  // ----------------------------------------------------------
+  // NAME VALIDATOR
+  // ----------------------------------------------------------
+  // Checks length and allowed characters
   static String? name(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Name is required';
@@ -95,7 +122,8 @@ class Validators {
       return 'Name must be less than ${AppConstants.maxNameLength} characters';
     }
 
-    // Only allow letters, spaces, hyphens, and apostrophes
+    // Regex: Only letters, spaces, hyphens, apostrophes
+    // Examples: "Kasun Perera", "O'Brien", "Anne-Marie"
     final nameRegex = RegExp(r"^[a-zA-Z\s\-']+$");
     if (!nameRegex.hasMatch(trimmedValue)) {
       return 'Name can only contain letters, spaces, hyphens, and apostrophes';

@@ -74,7 +74,7 @@ static const bool useMockData = false;
 }
 ```
 
-### Login
+##Login
 - **URL:** `POST /auth/login.php`
 - **Body:**
 ```json
